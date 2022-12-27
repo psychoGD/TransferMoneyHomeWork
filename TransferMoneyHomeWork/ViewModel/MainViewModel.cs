@@ -11,7 +11,7 @@ using TransferMoneyHomeWork.RelayCommands;
 
 namespace TransferMoneyHomeWork.ViewModel
 {
-    public class MainViewModel:BaseViewModel
+    public class MainViewModel : BaseViewModel
     {
 
         public RelayCommand CloseCommand { get; set; }
@@ -19,7 +19,7 @@ namespace TransferMoneyHomeWork.ViewModel
         public RelayCommand LoadDataCommand { get; set; }
         public RelayCommand TransferMoneyCommand { get; set; }
         public RelayCommand ShowTest { get; set; }
-        
+
 
         public string CardId { get; set; }
         //User 
@@ -29,7 +29,7 @@ namespace TransferMoneyHomeWork.ViewModel
         public string Username
         {
             get { return username; }
-            set { username = value;OnPropertyChanged(); }
+            set { username = value; OnPropertyChanged(); }
         }
 
         private string balance;
@@ -37,7 +37,7 @@ namespace TransferMoneyHomeWork.ViewModel
         public string Balance
         {
             get { return balance; }
-            set { balance = value;OnPropertyChanged(); }
+            set { balance = value; OnPropertyChanged(); }
         }
 
 
@@ -46,7 +46,7 @@ namespace TransferMoneyHomeWork.ViewModel
         public string FlagEnabled
         {
             get { return flagEnabled; }
-            set { flagEnabled = value;OnPropertyChanged(); }
+            set { flagEnabled = value; OnPropertyChanged(); }
         }
 
         private string message;
@@ -54,7 +54,7 @@ namespace TransferMoneyHomeWork.ViewModel
         public string Message
         {
             get { return message; }
-            set { message = value;OnPropertyChanged(); }
+            set { message = value; OnPropertyChanged(); }
         }
 
 
@@ -66,7 +66,7 @@ namespace TransferMoneyHomeWork.ViewModel
 
         public static Mutex mutex { get; set; }
         string mutexName = "TestMutex";
-
+        static Object obj = new Object();
         public MainViewModel(MainWindow window)
         {
             dispatcherTimer = new DispatcherTimer();
@@ -77,13 +77,13 @@ namespace TransferMoneyHomeWork.ViewModel
             FlagEnabled = "False";
             mainWindow = window;
 
-            mutex = new Mutex(true,mutexName);
+            mutex = new Mutex(true, mutexName);
 
 
             CloseCommand = new RelayCommand((o) =>
             {
-                if(ProgramCanClose==true)
-                mainWindow.Close();
+                if (ProgramCanClose == true)
+                    mainWindow.Close();
             });
 
             InsertCardCommand = new RelayCommand((o) =>
@@ -92,33 +92,36 @@ namespace TransferMoneyHomeWork.ViewModel
             });
             LoadDataCommand = new RelayCommand((o) =>
             {
-                
+
                 //This Is For Only Test
                 Username = "John";
                 Balance = "500";
                 BalanceInt = int.Parse(Balance);
-    
+
             });
             TransferMoneyCommand = new RelayCommand((o) =>
             {
+                mutex.WaitOne();
+                Balance = "500";
                 ProgramCanClose = false;
                 dispatcherTimer.Start();
-                App.IsProgressRun= true;
+                App.IsProgressRun = true;
+                
             });
 
             ShowTest = new RelayCommand((o) =>
             {
-                
+                mainWindow.Close();
             });
         }
 
-        
+
 
         //Logic For Transfer Money
         private void TransferMoneyFunc(object sender, EventArgs e)
         {
             var balance2 = double.Parse(Balance);
-            if(balance2!=0)
+            if (balance2 != 0)
             {
                 balance2 -= (BalanceInt / 100) * 10;
                 Balance = balance2.ToString();
@@ -128,8 +131,9 @@ namespace TransferMoneyHomeWork.ViewModel
                 dispatcherTimer.Stop();
                 ProgramCanClose = true;
                 Message = "Transfer Completed Succesfully";
+                mutex.ReleaseMutex();
             }
         }
-        
+
     }
 }
