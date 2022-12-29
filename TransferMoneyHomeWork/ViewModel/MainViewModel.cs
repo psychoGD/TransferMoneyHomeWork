@@ -101,11 +101,8 @@ namespace TransferMoneyHomeWork.ViewModel
             });
             TransferMoneyCommand = new RelayCommand((o) =>
             {
-                mutex.WaitOne();
-                Balance = "500";
                 ProgramCanClose = false;
                 dispatcherTimer.Start();
-                App.IsProgressRun = true;
                 
             });
 
@@ -116,10 +113,13 @@ namespace TransferMoneyHomeWork.ViewModel
         }
 
 
-
+        public int count { get; set; }
         //Logic For Transfer Money
         private void TransferMoneyFunc(object sender, EventArgs e)
         {
+
+            mutex.WaitOne();
+
             var balance2 = double.Parse(Balance);
             if (balance2 != 0)
             {
@@ -131,6 +131,9 @@ namespace TransferMoneyHomeWork.ViewModel
                 dispatcherTimer.Stop();
                 ProgramCanClose = true;
                 Message = "Transfer Completed Succesfully";
+                count++;
+                MessageBox.Show("Test" + " " + count);
+                
                 mutex.ReleaseMutex();
             }
         }

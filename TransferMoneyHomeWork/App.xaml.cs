@@ -15,7 +15,6 @@ namespace TransferMoneyHomeWork
     public partial class App : Application
     {
         private static Mutex _mutex = null;
-        public static bool IsProgressRun = false;
         protected override void OnStartup(StartupEventArgs e)
         {
             
@@ -24,14 +23,14 @@ namespace TransferMoneyHomeWork
             
             _mutex = new Mutex(true, appName, out createdNew);
 
-            //For test
+            
 
-            //if (!createdNew)
-            //{
-            //    //app is already running! Exiting the application  
-            //    MessageBox.Show("App is already running");
-            //    Application.Current.Shutdown();
-            //}
+            if (!createdNew)
+            {
+                //app is already running! Exiting the application  
+                MessageBox.Show("App is already running");
+                Application.Current.Shutdown();
+            }
 
             base.OnStartup(e);
         }
